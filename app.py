@@ -4,30 +4,30 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Welcome to my Flask API! - Prince Reniel"
+    return "Welcome to my Flask API! - Grant David"
 
 @app.route('/student')
 def get_student():
     return jsonify({
-        "student_id": "YOUR-STUDENT-ID",
-        "name": "Prince Reniel",
+        "student_id": "24-00170",
+        "name": "Grant David Padilla",
         "program": "BSIT",
-        "year": 1,
-        "section": "A"
+        "year": 3,
+        "section": "B"
     })
 
 @app.route('/hello')
 def say_hello():
     name = request.args.get('name', 'Student')
     return jsonify({
-        "message": f"Hello, {name}!"
+        "message": f"Hello, {name}!"         
     })
 
 # NEW ENDPOINT 1
 @app.route('/my-hobbies')
 def my_hobbies():
     return jsonify({
-        "name": "Prince Reniel",
+        "name": "Grant David",
         "hobbies": [
             "Playing billiards",
             "Playing online games",
