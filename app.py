@@ -9,16 +9,16 @@ def home():
 @app.route('/student')
 def get_student():
     return jsonify({
-        "student_id": "YOUR_STUDENT_ID",
+        "student_id": "24-00170",
         "name": "Grant David Padilla",
         "program": "BSIT",
-        "year": 1,
-        "section": "A"
+        "year": 3,
+        "section": "B"
     })
 
 @app.route('/hello')
 def say_hello():
-    name = request.args.get('name', 'Student')
+    name = request.args.get('name', 'Grant')
     return jsonify({
         "message": f"Hello, {name}!"
     })
