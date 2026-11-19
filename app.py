@@ -4,21 +4,21 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Welcome to my Flask API! - Grant David Padilla"
+    return "Welcome to my Flask API! - Prince Reniel"
 
 @app.route('/student')
 def get_student():
     return jsonify({
-        "student_id": "24-00170",
-        "name": "Grant David Padilla",
+        "student_id": "YOUR-STUDENT-ID",
+        "name": "Prince Reniel",
         "program": "BSIT",
-        "year": 3,
-        "section": "B"
+        "year": 1,
+        "section": "A"
     })
 
 @app.route('/hello')
 def say_hello():
-    name = request.args.get('name', 'Grant')
+    name = request.args.get('name', 'Student')
     return jsonify({
         "message": f"Hello, {name}!"
     })
@@ -27,8 +27,12 @@ def say_hello():
 @app.route('/my-hobbies')
 def my_hobbies():
     return jsonify({
-        "name": "Grant David Padilla",
-        "hobbies": ["Playing billiards", "Playing online games", "Listening to music"],
+        "name": "Prince Reniel",
+        "hobbies": [
+            "Playing billiards",
+            "Playing online games",
+            "Listening to music"
+        ],
         "favorite_hobby": "Playing billiards"
     })
 
