@@ -1,33 +1,41 @@
-from flask import Flask, jsonify, request
+
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
+# HOME PAGE
 @app.route('/')
 def home():
-    return "Welcome to my Flask API! - Grant David"
+    return render_template('index.html')
 
+
+# STUDENT INFORMATION API
 @app.route('/student')
 def get_student():
     return jsonify({
-        "student_id": "24-00170",
+        "student_id": "YOUR-STUDENT-ID",
         "name": "Grant David Padilla",
         "program": "BSIT",
-        "year": 3,
-        "section": "B"
+        "year": 1,
+        "section": "A"
     })
 
+
+# GREETING API
 @app.route('/hello')
 def say_hello():
     name = request.args.get('name', 'Student')
+
     return jsonify({
-        "message": f"Hello, {name}!"         
+        "message": f"Hello, {name}!"
     })
 
-# NEW ENDPOINT 1
+
+# MY HOBBIES API
 @app.route('/my-hobbies')
 def my_hobbies():
     return jsonify({
-        "name": "Grant David",
+        "name": "Grant David Padilla",
         "hobbies": [
             "Playing billiards",
             "Playing online games",
@@ -36,7 +44,8 @@ def my_hobbies():
         "favorite_hobby": "Playing billiards"
     })
 
-# NEW ENDPOINT 2
+
+# ADD NUMBERS API
 @app.route('/add')
 def add_numbers():
     try:
@@ -48,8 +57,12 @@ def add_numbers():
             "number2": num2,
             "sum": num1 + num2
         })
+
     except ValueError:
-        return jsonify({"error": "Please enter valid numbers"}), 400
+        return jsonify({
+            "error": "Please enter valid numbers"
+        }), 400
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
