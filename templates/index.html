@@ -2,29 +2,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student API Interface</title>
+    <title>Student Information System</title>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: #f4f4f4;
+            background: #f2f2f2;
+            margin: 30px;
         }
 
-        h1, h2 {
-            color: #333;
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
         }
 
         button {
-            padding: 10px 16px;
-            margin: 5px;
-            cursor: pointer;
-            background-color: #2563eb;
+            background: #0879d1;
             color: white;
             border: none;
+            padding: 10px 15px;
+            margin: 5px;
             border-radius: 5px;
+            cursor: pointer;
         }
 
         input {
@@ -32,126 +34,136 @@
             margin: 5px;
         }
 
-        #result, #greeting, #hobbies {
-            margin-top: 20px;
-            padding: 15px;
-            background: white;
-            border: 1px solid #ccc;
+        .student {
+            background: #eeeeee;
+            padding: 12px;
+            margin: 10px 0;
             border-radius: 5px;
+        }
+
+        h1, h2 {
+            color: #222;
         }
     </style>
 </head>
 
 <body>
 
-    <h1>Student API Interface</h1>
-    <p>Welcome to my Flask API Web Interface!</p>
+<div class="container">
 
-    <!-- STUDENT INFORMATION -->
+    <h1>Student Information System</h1>
+
     <h2>Student Information</h2>
+    <button onclick="loadStudent()">Load Student Information</button>
+    <div id="studentInfo"></div>
 
-    <button onclick="loadStudent()">
-        Load Student Information
-    </button>
-
-    <div id="result"></div>
-
-    <hr>
-
-    <!-- GREETING API -->
     <h2>Greeting API</h2>
+    <input type="text" id="nameInput" placeholder="Enter your name">
+    <button onclick="greetStudent()">Say Hello</button>
+    <div id="greeting"></div>
 
-    <input
-        type="text"
-        id="nameInput"
-        placeholder="Enter your first name"
-    >
-
-    <button onclick="sayHello()">Say Hello</button>
-
-    <p id="greeting"></p>
-
-    <hr>
-
-    <!-- CUSTOM API: MY HOBBIES -->
-    <h2>My Hobbies API</h2>
-
+    <h2>My Hobbies</h2>
     <button onclick="loadHobbies()">Load My Hobbies</button>
-
     <div id="hobbies"></div>
 
-    <script>
+    <h2>Students from SQLite Database</h2>
+    <button onclick="loadStudents()">Load Students</button>
+    <div id="studentList"></div>
 
-        // LOAD STUDENT INFORMATION
-        function loadStudent() {
-            fetch('/student')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Request failed');
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('result').innerHTML =
-                    '<p><b>Student ID:</b> ' + data.student_id + '</p>' +
-                    '<p><b>Name:</b> ' + data.name + '</p>' +
-                    '<p><b>Program:</b> ' + data.program + '</p>' +
-                    '<p><b>Year:</b> ' + data.year + '</p>' +
-                    '<p><b>Section:</b> ' + data.section + '</p>';
-            })
-            .catch(error => {
-                document.getElementById('result').innerText =
-                    'Unable to retrieve student information.';
-            });
-        }
+    <h2>Search Students by Program</h2>
+    <input type="text" id="programInput" placeholder="Enter BSIT or BSCS">
+    <button onclick="loadByProgram()">Search Program</button>
+    <div id="programResults"></div>
 
+</div>
 
-        // GREETING API
-        function sayHello() {
-            const name = document.getElementById('nameInput').value;
+<script>
 
-            fetch('/hello?name=' + encodeURIComponent(name))
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Request failed');
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('greeting').innerText =
-                    data.message;
-            })
-            .catch(error => {
-                document.getElementById('greeting').innerText =
-                    'Unable to retrieve greeting.';
-            });
-        }
+function loadStudent() {
+    fetch('/student')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('studentInfo').innerHTML =
+            `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    });
+}
 
+function greetStudent() {
+    const name = document.getElementById('nameInput').value;
 
-        // CUSTOM MY HOBBIES API
-        function loadHobbies() {
-            fetch('/my-hobbies')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Request failed');
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('hobbies').innerHTML =
-                    '<p><b>Name:</b> ' + data.name + '</p>' +
-                    '<p><b>Hobbies:</b> ' +
-                    data.hobbies.join(', ') + '</p>' +
-                    '<p><b>Favorite Hobby:</b> ' +
-                    data.favorite_hobby + '</p>';
-            })
-            .catch(error => {
-                document.getElementById('hobbies').innerText =
-                    'Unable to retrieve hobbies.';
-            });
-        }
+    fetch('/hello?name=' + encodeURIComponent(name))
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('greeting').innerHTML =
+            `<p>${data.message}</p>`;
+    });
+}
 
-    </script>
+function loadHobbies() {
+    fetch('/my-hobbies')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('hobbies').innerHTML =
+            `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    });
+}
+
+function loadStudents() {
+    fetch('/students')
+    .then(response => response.json())
+    .then(data => {
+        let output = '';
+
+        data.forEach(student => {
+            output += `
+                <div class="student">
+                    <strong>ID:</strong> ${student.id}<br>
+                    <strong>Student ID:</strong> ${student.student_id}<br>
+                    <strong>Name:</strong> ${student.name}<br>
+                    <strong>Program:</strong> ${student.program}<br>
+                    <strong>Year:</strong> ${student.year}<br>
+                    <strong>Section:</strong> ${student.section}
+                </div>
+            `;
+        });
+
+        document.getElementById('studentList').innerHTML =
+            output || 'No students found.';
+    });
+}
+
+function loadByProgram() {
+    const program = document.getElementById('programInput').value.trim();
+
+    if (!program) {
+        document.getElementById('programResults').innerHTML =
+            'Please enter a program.';
+        return;
+    }
+
+    fetch('/students/program/' + encodeURIComponent(program))
+    .then(response => response.json())
+    .then(data => {
+        let output = '';
+
+        data.forEach(student => {
+            output += `
+                <div class="student">
+                    <strong>ID:</strong> ${student.id}<br>
+                    <strong>Name:</strong> ${student.name}<br>
+                    <strong>Program:</strong> ${student.program}<br>
+                    <strong>Year:</strong> ${student.year}<br>
+                    <strong>Section:</strong> ${student.section}
+                </div>
+            `;
+        });
+
+        document.getElementById('programResults').innerHTML =
+            output || 'No students found.';
+    });
+}
+
+</script>
 
 </body>
 </html>

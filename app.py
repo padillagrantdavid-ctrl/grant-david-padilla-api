@@ -1,19 +1,33 @@
 
+import sqlite3
+import os
+
 from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
-# HOME PAGE
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(BASE_DIR, 'students.db')
+
+
+# Database connection
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+# Home page
 @app.route('/')
 def home():
     return render_template('index.html')
 
 
-# STUDENT INFORMATION API
+# Student information API
 @app.route('/student')
 def get_student():
     return jsonify({
-        "student_id": "YOUR-STUDENT-ID",
+        "student_id": "2026-00123",
         "name": "Grant David Padilla",
         "program": "BSIT",
         "year": 1,
@@ -21,7 +35,7 @@ def get_student():
     })
 
 
-# GREETING API
+# Greeting API
 @app.route('/hello')
 def say_hello():
     name = request.args.get('name', 'Student')
@@ -31,7 +45,7 @@ def say_hello():
     })
 
 
-# MY HOBBIES API
+# Hobbies API
 @app.route('/my-hobbies')
 def my_hobbies():
     return jsonify({
@@ -45,7 +59,7 @@ def my_hobbies():
     })
 
 
-# ADD NUMBERS API
+# Addition API
 @app.route('/add')
 def add_numbers():
     try:
@@ -62,6 +76,55 @@ def add_numbers():
         return jsonify({
             "error": "Please enter valid numbers"
         }), 400
+
+
+# Get all students
+@app.route('/students')
+def get_students():
+    conn = get_db_connection()
+
+    students = conn.execute(
+        'SELECT * FROM students ORDER BY id'
+    ).fetchall()
+
+    conn.close()
+
+    return jsonify([dict(student) for student in students])
+
+
+# Get student by ID
+@app.route('/students/<int:id>')
+def get_student_by_id(id):
+    conn = get_db_connection()
+
+    student = conn.execute(
+        'SELECT * FROM students WHERE id = ?',
+        (id,)
+    ).fetchone()
+
+    conn.close()
+
+    if student is None:
+        return jsonify({
+            "error": "Student not found"
+        }), 404
+
+    return jsonify(dict(student))
+
+
+# Additional endpoint: Search by program
+@app.route('/students/program/<program>')
+def get_students_by_program(program):
+    conn = get_db_connection()
+
+    students = conn.execute(
+        'SELECT * FROM students WHERE UPPER(program) = ? ORDER BY id',
+        (program.upper(),)
+    ).fetchall()
+
+    conn.close()
+
+    return jsonify([dict(student) for student in students])
 
 
 if __name__ == '__main__':
